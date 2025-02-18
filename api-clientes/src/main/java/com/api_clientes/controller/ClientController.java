@@ -1,5 +1,6 @@
 package com.api_clientes.controller;
 
+import com.api_clientes.dto.ClientDTO;
 import com.api_clientes.entity.ClientEntity;
 import com.api_clientes.service.ClientService;
 import jakarta.validation.Valid;
@@ -26,8 +27,8 @@ public class ClientController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createClient(@RequestBody @Valid ClientEntity clientEntity) {
-        clientService.createClient(clientEntity);
+    public void createClient(@RequestBody @Valid ClientDTO clientDTO) {
+        clientService.createClient(clientDTO);
 
     }
 
@@ -40,10 +41,8 @@ public class ClientController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ClientEntity> updateClient(
-            @PathVariable Long id, @RequestBody @Valid ClientEntity updateClient){
-       clientService.updateClientById(id, updateClient);
-       return ResponseEntity.ok(updateClient);
-
+            @PathVariable Long id, @RequestBody @Valid ClientDTO clientDTO){
+        return ResponseEntity.ok(clientService.updateClientById(id, clientDTO));
     }
 
     @DeleteMapping("/{id}")

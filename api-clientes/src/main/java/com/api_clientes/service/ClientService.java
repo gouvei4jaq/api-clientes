@@ -1,5 +1,6 @@
 package com.api_clientes.service;
 
+import com.api_clientes.dto.ClientDTO;
 import com.api_clientes.entity.ClientEntity;
 import com.api_clientes.repository.ClientRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,7 +18,16 @@ public class ClientService {
     private final ClientRepository clientRepository;
 
     @Transactional
-    public ClientEntity createClient (@Valid ClientEntity clientEntity){
+    public ClientEntity createClient (@Valid ClientDTO clientDTO){
+        ClientEntity clientEntity = ClientEntity.builder()
+                .cpf(clientDTO.getCpf())
+                .email(clientDTO.getEmail())
+                .name(clientDTO.getName())
+                .dateOfBirth(clientDTO.getDateOfBirth())
+                .cellPhone(clientDTO.getCellPhone())
+                .address(clientDTO.getAddress())
+                .balance(clientDTO.getBalance())
+                .build();
         return clientRepository.save(clientEntity);
     }
 
@@ -26,14 +36,14 @@ public class ClientService {
     }
 
     @Transactional
-    public ClientEntity updateClientById (Long id, @Valid ClientEntity updateClient){
+    public ClientEntity updateClientById (Long id, @Valid ClientDTO clientDTO){
         return clientRepository.findById(id).map(clientEntity -> {
-            clientEntity.setName(updateClient.getName());
-            clientEntity.setCpf(updateClient.getCpf());
-            clientEntity.setEmail(updateClient.getEmail());
-            clientEntity.setDateOfBirth(updateClient.getDateOfBirth());
-            clientEntity.setCellPhone(updateClient.getCellPhone());
-            clientEntity.setBalance(updateClient.getBalance());
+            clientEntity.setName(clientDTO.getName());
+            clientEntity.setCpf(clientDTO.getCpf());
+            clientEntity.setEmail(clientDTO.getEmail());
+            clientEntity.setDateOfBirth(clientDTO.getDateOfBirth());
+            clientEntity.setCellPhone(clientDTO.getCellPhone());
+            clientEntity.setBalance(clientDTO.getBalance());
             return clientEntity;
         }).orElseThrow(() -> new EntityNotFoundException("Cliente Não Encontrado."));
     }
