@@ -40,7 +40,7 @@ public class ClientService {
 
     @Transactional
     public void deleteClientById(Long id){
-        clientRepository.findById(id);
+        clientRepository.deleteById(id);
     }
 
 }
