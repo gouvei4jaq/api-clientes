@@ -1,15 +1,11 @@
 package com.api_clientes.service;
 
-import com.api_clientes.dto.ClientDTO;
+import com.api_clientes.request.ClientRequest;
 import com.api_clientes.entity.ClientEntity;
+import com.api_clientes.exception.ClientNotFoundException;
 import com.api_clientes.repository.ClientRepository;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,38 +13,21 @@ public class ClientService {
 
     private final ClientRepository clientRepository;
 
-    @Transactional
-    public ClientEntity createClient (@Valid ClientDTO clientDTO){
-        ClientEntity clientEntity = ClientEntity.builder()
-                .cpf(clientDTO.getCpf())
-                .email(clientDTO.getEmail())
-                .name(clientDTO.getName())
-                .dateOfBirth(clientDTO.getDateOfBirth())
-                .cellPhone(clientDTO.getCellPhone())
-                .address(clientDTO.getAddress())
-                .balance(clientDTO.getBalance())
-                .build();
-        return clientRepository.save(clientEntity);
+    public ClientEntity createClient (ClientRequest clientRequest){
+        return clientRepository.save(ClientEntity.valueOf(clientRequest));
     }
 
-    public Optional<ClientEntity> findClientById (Long id){
-        return clientRepository.findById(id);
+    public ClientEntity findClientById (Long id){
+        return clientRepository.findById(id).orElseThrow(() -> new ClientNotFoundException("404.000"));
     }
 
-    @Transactional
-    public ClientEntity updateClientById (Long id, @Valid ClientDTO clientDTO){
+    public ClientEntity updateClientById (Long id, ClientRequest clientRequest){
         return clientRepository.findById(id).map(clientEntity -> {
-            clientEntity.setName(clientDTO.getName());
-            clientEntity.setCpf(clientDTO.getCpf());
-            clientEntity.setEmail(clientDTO.getEmail());
-            clientEntity.setDateOfBirth(clientDTO.getDateOfBirth());
-            clientEntity.setCellPhone(clientDTO.getCellPhone());
-            clientEntity.setBalance(clientDTO.getBalance());
+            clientEntity.updateClient(clientRequest);
             return clientEntity;
-        }).orElseThrow(() -> new EntityNotFoundException("Cliente Não Encontrado."));
+        }).orElseThrow(() -> new ClientNotFoundException("404.000"));
     }
 
-    @Transactional
     public void deleteClientById(Long id){
         clientRepository.deleteById(id);
     }
