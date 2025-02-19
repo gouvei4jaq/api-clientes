@@ -1,7 +1,6 @@
 package com.api_clientes.entity;
 
 import com.api_clientes.request.ClientRequest;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,7 +33,7 @@ public class ClientEntity {
     private Long id;
 
     @Column(name = "nome")
-    private String name;
+    private String nome;
 
     @Column(name = "cpf", unique = true, nullable = false)
     private String cpf;
@@ -43,36 +42,36 @@ public class ClientEntity {
     private String email;
 
     @Column(name = "dataNascimento")
-    private LocalDate dateOfBirth;
+    private LocalDate dataNascimento;
 
     @Column(name = "telefone")
-    private String cellPhone;
+    private String telefone;
 
     @Column(name = "endereço")
-    private String address;
+    private String endereco;
 
     @Column(name = "saldo")
-    private BigDecimal balance;
+    private BigDecimal saldo;
 
     public static ClientEntity valueOf(ClientRequest clientRequest){
         return ClientEntity.builder()
                 .cpf(clientRequest.getCpf())
                 .email(clientRequest.getEmail())
-                .name(clientRequest.getName())
-                .dateOfBirth(clientRequest.getDateOfBirth())
-                .cellPhone(clientRequest.getCellPhone())
-                .address(clientRequest.getAddress())
-                .balance(clientRequest.getBalance())
+                .nome(clientRequest.getNome())
+                .dataNascimento(clientRequest.getDataNascimento())
+                .telefone(clientRequest.getTelefone())
+                .endereco(clientRequest.getEndereco())
+                .saldo(clientRequest.getSaldo())
                 .build();
     }
 
     public void updateClient(ClientRequest clientRequest){
-        setName(clientRequest.getName());
+        setNome(clientRequest.getNome());
         setCpf(clientRequest.getCpf());
         setEmail(clientRequest.getEmail());
-        setDateOfBirth(clientRequest.getDateOfBirth());
-        setCellPhone(clientRequest.getCellPhone());
-        setAddress(clientRequest.getAddress());
-        setBalance(clientRequest.getBalance());
+        setDataNascimento(clientRequest.getDataNascimento());
+        setTelefone(clientRequest.getTelefone());
+        setEndereco(clientRequest.getEndereco());
+        setSaldo(clientRequest.getSaldo());
     }
 }

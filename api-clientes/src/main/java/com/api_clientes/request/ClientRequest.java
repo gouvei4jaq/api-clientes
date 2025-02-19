@@ -18,37 +18,30 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class ClientRequest {
 
-    @JsonProperty("Nome")
-    @NotBlank(message = "Campo Obrigatório")
-    @Size(min = 3, message = "O campo Nome deve ter pelo menos 3 caracteres")
-    private String name;
+    @NotBlank(message = "400.001")
+    @Size(min = 3, message = "400.002")
+    private String nome;
 
-    @JsonProperty("Cpf")
-    @CPF(message = "Campo Inválido")
-    @NotBlank(message = "Campo Obrigatório")
-    @Size(min = 11, max = 11, message = "CPF precisa ter 11 dígitos")
+    @CPF(message = "422.000")
+    @NotBlank(message = "400.001")
+    @Size(min = 11, max = 11, message = "400.003")
     private String cpf;
 
-    @JsonProperty("Email")
-    @Email(message = "Campo Inválido")
+    @Email(message = "422.000")
     private String email;
 
-    @JsonProperty("DataNascimento")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    @NotNull(message = "Campo Obrigatório")
-    @Past(message = "A data de nascimento deve estar no passado")
-    private LocalDate dateOfBirth;
+    @NotNull(message = "400.001")
+    @Past(message = "400.004")
+    private LocalDate dataNascimento;
 
-    @JsonProperty("Telefone")
-    @Pattern(regexp = "\\d{10,11}", message = "Telefone deve ter 10 ou 11 dígitos")
-    private String cellPhone;
+    @Pattern(regexp = "\\d{10,11}", message = "400.005")
+    private String telefone;
 
-    @JsonProperty("Endereço")
-    @NotBlank(message = "Campo Obrigatório")
-    private String address;
+    @NotBlank(message = "400.001")
+    private String endereco;
 
-    @JsonProperty("Saldo")
-    @PositiveOrZero(message = "O campo Saldo não pode ser negativo")
-    private BigDecimal balance;
+    @PositiveOrZero(message = "422.001")
+    private BigDecimal saldo;
 
 }
