@@ -4,11 +4,13 @@ package com.api_clientes.controller;
 import com.api_clientes.exception.ClientNotFoundException;
 import com.api_clientes.exception.ClientUnderageException;
 import com.api_clientes.exception.DuplicateCpfException;
+import com.api_clientes.response.ErrorResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -25,44 +27,49 @@ public class ControllerAdvice {
     private final MessageSource messageSource;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
+    public ResponseEntity<Map<String, ErrorResponse>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, ErrorResponse> errors = new HashMap<>();
+        HttpStatus status = HttpStatus.BAD_REQUEST;
 
-        ex.getBindingResult().getFieldErrors().forEach(error -> {
+        for (var error : ex.getBindingResult().getFieldErrors()) {
             String messageCode = error.getDefaultMessage();
-
             String resolvedMessage = messageSource.getMessage(messageCode, null, messageCode, LocaleContextHolder.getLocale());
 
-            errors.put(error.getField(), resolvedMessage);
+            errors.put(error.getField(), new ErrorResponse(messageCode, resolvedMessage));
 
-        });
+            if (messageCode.startsWith("422")) {
+                status = HttpStatus.UNPROCESSABLE_ENTITY;
+            }
+        }
 
-        return errors;
+        return new ResponseEntity<>(errors, status);
     }
 
     @ExceptionHandler(ClientNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleClientNotFoundException(ClientNotFoundException ex) {
-        return messageSource.getMessage(ex.getMessage(), null, LocaleContextHolder.getLocale());
+    public ResponseEntity<ErrorResponse> handleClientNotFoundException(ClientNotFoundException ex) {
+        String message = messageSource.getMessage(ex.getMessage(), null, LocaleContextHolder.getLocale());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ErrorResponse(ex.getMessage(), message));
     }
 
     @ExceptionHandler(ClientUnderageException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handlerClientUnderageException(ClientUnderageException ex) {
-        return messageSource.getMessage(ex.getMessage(), null, LocaleContextHolder.getLocale());
+    public ResponseEntity<ErrorResponse> handlerClientUnderageException(ClientUnderageException ex) {
+        String message = messageSource.getMessage(ex.getMessage(), null, LocaleContextHolder.getLocale());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(ex.getMessage(), message));
     }
-
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public void handleException(Exception exception) {
+    public ResponseEntity<ErrorResponse> handleException(Exception exception) {
         log.error(exception.getMessage(), exception);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse("500.000", "Erro inesperado. Tente novamente mais tarde."));
     }
 
     @ExceptionHandler(DuplicateCpfException.class)
-    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public String handlerDuplicateCpfException(DuplicateCpfException ex) {
-        return messageSource.getMessage(ex.getMessage(), null, LocaleContextHolder.getLocale());
+    public ResponseEntity<ErrorResponse> handlerDuplicateCpfException(DuplicateCpfException ex) {
+        String message = messageSource.getMessage(ex.getMessage(), null, LocaleContextHolder.getLocale());
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(new ErrorResponse(ex.getMessage(), message));
     }
 
 }
