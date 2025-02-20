@@ -1,0 +1,216 @@
+openapi: 3.0.3
+info:
+  title: API de Clientes
+  description: API REST para gerenciar clientes de um banco, permitindo operações de cadastro, consulta, atualização e remoção.
+  version: 1.0.0
+
+
+servers:
+  - url: http://localhost:8080
+    description: Servidor Local
+
+paths:
+  /clientes:
+    post:
+      summary: Cadastra um novo cliente
+      description: Cria um novo cliente no banco de dados
+      operationId: createClient
+      tags:
+        - Clientes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientRequest"
+      responses:
+        "201":
+          description: Cliente criado com sucesso
+        "400":
+          description: Dados inválidos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: CPF inválido ou saldo negativo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /clientes/{id}:
+    get:
+      summary: Busca um cliente por ID
+      operationId: findClient
+      tags:
+        - Clientes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do cliente
+          schema:
+            type: number
+            format: long
+      responses:
+        "200":
+          description: Cliente encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientEntity"
+        "404":
+          description: Cliente não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientNotFoundResponse"
+
+    put:
+      summary: Atualiza um cliente existente
+      operationId: updateClient
+      tags:
+        - Clientes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do cliente
+          schema:
+            type: number
+            format: long
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientRequest"
+      responses:
+        "200":
+          description: Cliente atualizado com sucesso
+        "400":
+          description: Dados inválidos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Cliente não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientNotFoundResponse"
+
+    delete:
+      summary: Remove um cliente por ID
+      operationId: deleteClient
+      tags:
+        - Clientes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do cliente
+          schema:
+            type: number
+            format: long
+      responses:
+        "204":
+          description: Cliente removido com sucesso
+        "404":
+          description: Cliente não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientNotFoundResponse"
+
+components:
+  schemas:
+    ClientRequest:
+      type: object
+      required:
+        - nome
+        - cpf
+        - email
+        - dataNascimento
+        - endereco
+        - saldo
+      properties:
+        nome:
+          type: string
+          minLength: 3
+          example: Jaqueline Gouveia
+        cpf:
+          type: string
+          minLength: 11
+          maxLength: 11
+          example: "25472848040"
+        email:
+          type: string
+          example: jaque.gouveia@gmail.com
+        dataNascimento:
+          type: string
+          format: date
+          example: "1990-05-15"
+        telefone:
+          type: string
+          example: "19996063232"
+        endereco:
+          type: string
+          example: "Rua Exemplo, 123 - Campinas, SP"
+        saldo:
+          type: number
+          format: BigDecimal
+          example: 1000.00
+
+    ClientEntity:
+      type: object
+      properties:
+        id:
+          type: number
+          format: long
+          example: 1
+        nome:
+          type: string
+          example: Jaqueline Gouveia
+        cpf:
+          type: string
+          example: "25472848040"
+        email:
+          type: string
+          example: Jaque.gouveia@gmail.com
+        dataNascimento:
+          type: string
+          format: date
+          example: "1990-05-15"
+        telefone:
+          type: string
+          example: "19996063232"
+        endereco:
+          type: string
+          example: "Rua Exemplo, 123 - Campinas, SP"
+        saldo:
+          type: number
+          format: BigDecimal
+          example: 1000.00
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          example: "400.001"
+        message:
+          type: string
+          example: "Dados inválidos"
+
+    ClientNotFoundResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          example: "404.000"
+        message:
+          type: string
+          example: "Cliente não encontrado"
