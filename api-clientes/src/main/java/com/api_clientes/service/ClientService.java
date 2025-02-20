@@ -33,6 +33,7 @@ public class ClientService {
     }
 
     public ClientEntity updateClientById (Long id, ClientRequest clientRequest){
+        validateAge(clientRequest.getDataNascimento());
         return clientRepository.findById(id).map(clientEntity -> {
             clientEntity.updateClient(clientRequest);
             return clientEntity;
