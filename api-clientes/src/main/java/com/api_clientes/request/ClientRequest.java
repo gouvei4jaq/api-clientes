@@ -28,6 +28,7 @@ public class ClientRequest {
     private String cpf;
 
     @Email(message = "422.000")
+    @NotBlank(message = "400.001")
     private String email;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
