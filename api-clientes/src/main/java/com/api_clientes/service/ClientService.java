@@ -41,7 +41,9 @@ public class ClientService {
     }
 
     public void deleteClientById(Long id){
-        clientRepository.deleteById(id);
+        ClientEntity client = clientRepository.findById(id)
+                .orElseThrow(() -> new ClientNotFoundException("404.000"));
+        clientRepository.delete(client);
     }
 
     public void validateAge(LocalDate birthDate){
