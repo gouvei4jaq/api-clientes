@@ -1,6 +1,6 @@
 # API de Clientes
 
-#### Esta é uma API REST para gerenciamento de clientes, desenvolvida em Java com Spring Boot. A API permite criar, buscar, atualizar e excluir clientes, garantindo validação de idade mínima e evitando duplicidade de
+#### Esta é uma API REST para gerenciamento de clientes, desenvolvida em Java com Spring Boot. A API permite criar, buscar, atualizar e excluir clientes.
 
 # Configuração de ambiente local para desenvolvimento
 
