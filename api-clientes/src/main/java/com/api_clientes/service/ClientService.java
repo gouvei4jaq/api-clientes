@@ -36,7 +36,7 @@ public class ClientService {
         validateAge(clientRequest.getDataNascimento());
         return clientRepository.findById(id).map(clientEntity -> {
             clientEntity.updateClient(clientRequest);
-            return clientEntity;
+            return clientRepository.save(clientEntity);
         }).orElseThrow(() -> new ClientNotFoundException("404.000"));
     }
 
